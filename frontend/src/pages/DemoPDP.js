@@ -32,6 +32,7 @@ export default function DemoPDP() {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [scoreKey, setScoreKey] = useState(0);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024);
