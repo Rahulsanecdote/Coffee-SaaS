@@ -424,6 +424,163 @@ class TasteFitAPITester:
             self.log_test("Viewer Admin Access (Forbidden)", False, str(e))
             return False
 
+    def test_taste_fit_score_with_profile(self):
+        """Test taste-fit score endpoint when profile exists"""
+        try:
+            # Ensure profile exists first
+            self.test_create_profile()
+            
+            # Mock product sensory data (from papayo-natural)
+            payload = {
+                "session_id": self.session_id,
+                "product_sensory": {
+                    "aroma": 7,
+                    "flavor": 8,
+                    "aftertaste": 7,
+                    "acidity": 6,
+                    "sweetness": 8,
+                    "mouthfeel": 7
+                }
+            }
+            response = requests.post(
+                f"{self.base_url}/api/affective/taste-fit",
+                json=payload,
+                timeout=10
+            )
+            success = response.status_code == 200
+            if success:
+                data = response.json()
+                success = (
+                    data.get("profile_exists") == True and
+                    "score" in data and
+                    "label" in data and
+                    "breakdown" in data and
+                    isinstance(data["score"], int) and
+                    0 <= data["score"] <= 100
+                )
+            self.log_test("Taste-Fit Score (With Profile)", success, f"Status: {response.status_code}")
+            return success
+        except Exception as e:
+            self.log_test("Taste-Fit Score (With Profile)", False, str(e))
+            return False
+
+    def test_taste_fit_score_no_profile(self):
+        """Test taste-fit score endpoint when no profile exists"""
+        try:
+            # Use a different session ID without profile
+            new_session_id = str(uuid.uuid4())
+            payload = {
+                "session_id": new_session_id,
+                "product_sensory": {
+                    "aroma": 7,
+                    "flavor": 8,
+                    "aftertaste": 7,
+                    "acidity": 6,
+                    "sweetness": 8,
+                    "mouthfeel": 7
+                }
+            }
+            response = requests.post(
+                f"{self.base_url}/api/affective/taste-fit",
+                json=payload,
+                timeout=10
+            )
+            success = response.status_code == 200
+            if success:
+                data = response.json()
+                success = (
+                    data.get("profile_exists") == False and
+                    data.get("score") is None
+                )
+            self.log_test("Taste-Fit Score (No Profile)", success, f"Status: {response.status_code}")
+            return success
+        except Exception as e:
+            self.log_test("Taste-Fit Score (No Profile)", False, str(e))
+            return False
+
+    def test_taste_fit_batch_with_profile(self):
+        """Test taste-fit batch endpoint for multiple products"""
+        try:
+            # Ensure profile exists first
+            self.test_create_profile()
+            
+            # Mock multiple products with sensory data
+            payload = {
+                "session_id": self.session_id,
+                "products": [
+                    {
+                        "product_id": "papayo-natural",
+                        "sensory": {
+                            "aroma": 7, "flavor": 8, "aftertaste": 7,
+                            "acidity": 6, "sweetness": 8, "mouthfeel": 7
+                        }
+                    },
+                    {
+                        "product_id": "geisha-honey",
+                        "sensory": {
+                            "aroma": 8, "flavor": 9, "aftertaste": 8,
+                            "acidity": 7, "sweetness": 8, "mouthfeel": 6
+                        }
+                    }
+                ]
+            }
+            response = requests.post(
+                f"{self.base_url}/api/affective/taste-fit/batch",
+                json=payload,
+                timeout=10
+            )
+            success = response.status_code == 200
+            if success:
+                data = response.json()
+                success = (
+                    data.get("profile_exists") == True and
+                    "scores" in data and
+                    isinstance(data["scores"], list) and
+                    len(data["scores"]) == 2 and
+                    all("product_id" in score and "score" in score and "label" in score 
+                        for score in data["scores"])
+                )
+            self.log_test("Taste-Fit Batch (With Profile)", success, f"Status: {response.status_code}")
+            return success
+        except Exception as e:
+            self.log_test("Taste-Fit Batch (With Profile)", False, str(e))
+            return False
+
+    def test_taste_fit_batch_no_profile(self):
+        """Test taste-fit batch endpoint when no profile exists"""
+        try:
+            # Use a different session ID without profile
+            new_session_id = str(uuid.uuid4())
+            payload = {
+                "session_id": new_session_id,
+                "products": [
+                    {
+                        "product_id": "papayo-natural",
+                        "sensory": {
+                            "aroma": 7, "flavor": 8, "aftertaste": 7,
+                            "acidity": 6, "sweetness": 8, "mouthfeel": 7
+                        }
+                    }
+                ]
+            }
+            response = requests.post(
+                f"{self.base_url}/api/affective/taste-fit/batch",
+                json=payload,
+                timeout=10
+            )
+            success = response.status_code == 200
+            if success:
+                data = response.json()
+                success = (
+                    data.get("profile_exists") == False and
+                    data.get("scores") == []
+                )
+            self.log_test("Taste-Fit Batch (No Profile)", success, f"Status: {response.status_code}")
+            return success
+        except Exception as e:
+            self.log_test("Taste-Fit Batch (No Profile)", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print(f"🚀 Starting Unchained Coffee Taste Fit API Tests")
