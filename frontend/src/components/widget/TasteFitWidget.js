@@ -16,7 +16,7 @@ const ATTRIBUTES = [
   { key: 'mouthfeel', label: 'Mouthfeel / Body', prefDesc: 'How full-bodied do you prefer?', tasteDesc: 'How full-bodied is this coffee?' },
 ];
 
-export default function TasteFitWidget({ productId, variantId, productHandle, tastingNotes = [] }) {
+export default function TasteFitWidget({ productId, variantId, productHandle, tastingNotes = [], onSubmitSuccess }) {
   const sessionId = useSessionId();
   const [mode, setMode] = useState('preference_only');
   const [ratings, setRatings] = useState({});
