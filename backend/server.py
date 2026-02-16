@@ -153,6 +153,16 @@ class LoginBody(BaseModel):
     password: str
 
 
+class TasteFitScoreBody(BaseModel):
+    session_id: str
+    product_sensory: dict
+
+
+class TasteFitBatchBody(BaseModel):
+    session_id: str
+    products: List[dict]
+
+
 # --- Helpers ---
 
 def check_rate_limit(key: str, max_per_day: int = 10) -> bool:
