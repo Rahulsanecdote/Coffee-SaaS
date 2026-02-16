@@ -9,6 +9,9 @@ from typing import Optional, List
 from contextlib import asynccontextmanager
 from collections import defaultdict
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI, HTTPException, Depends, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
