@@ -185,6 +185,7 @@ export default function DemoPDP() {
                   variantId={selectedVariant?.id}
                   productHandle={product.handle}
                   tastingNotes={product.tasting_notes}
+                  onSubmitSuccess={() => setScoreKey(k => k + 1)}
                 />
               </div>
             )}
