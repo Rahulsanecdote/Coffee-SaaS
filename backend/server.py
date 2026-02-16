@@ -373,6 +373,73 @@ async def create_event(body: EventBody):
     return {"status": "ok"}
 
 
+# --- Public: Taste-Fit Score ---
+
+def compute_fit_score(profile, product_sensory):
+    """Compute taste-fit score: how well a product matches user preferences."""
+    attr_map = [
+        ("aroma", "aroma_pref_1to9"),
+        ("flavor", "flavor_pref_1to9"),
+        ("aftertaste", "aftertaste_pref_1to9"),
+        ("acidity", "acidity_pref_1to9"),
+        ("sweetness", "sweetness_pref_1to9"),
+        ("mouthfeel", "mouthfeel_pref_1to9"),
+    ]
+    breakdown = {}
+    total = 0
+    count = 0
+    for sensory_key, pref_key in attr_map:
+        pref = profile.get(pref_key)
+        sensory = product_sensory.get(sensory_key)
+        if pref is not None and sensory is not None:
+            match = max(0, 1 - abs(pref - sensory) / 8)
+            breakdown[sensory_key] = {
+                "match": round(match * 100),
+                "pref": pref,
+                "product": sensory,
+                "delta": sensory - pref,
+            }
+            total += match
+            count += 1
+    overall = round((total / max(count, 1)) * 100)
+    # Apply slight curve to make scores more meaningful (avoid clustering at 75-90)
+    curved = round(min(99, max(0, overall * 1.1 - 5)))
+    label = "Perfect Match" if curved >= 90 else "Great Match" if curved >= 75 else "Good Fit" if curved >= 60 else "Decent Fit" if curved >= 45 else "Different Vibe"
+    return {
+        "score": curved,
+        "raw_score": overall,
+        "label": label,
+        "breakdown": breakdown,
+    }
+
+
+@app.post("/api/affective/taste-fit")
+async def taste_fit_score(body: TasteFitScoreBody):
+    profile = await db.consumer_taste_profiles.find_one(
+        {"session_id": body.session_id}, {"_id": 0}
+    )
+    if not profile:
+        return {"profile_exists": False, "score": None}
+    result = compute_fit_score(profile, body.product_sensory)
+    return {**result, "profile_exists": True}
+
+
+@app.post("/api/affective/taste-fit/batch")
+async def taste_fit_batch(body: TasteFitBatchBody):
+    profile = await db.consumer_taste_profiles.find_one(
+        {"session_id": body.session_id}, {"_id": 0}
+    )
+    if not profile:
+        return {"profile_exists": False, "scores": []}
+    scores = []
+    for product in body.products:
+        pid = product.get("product_id", "")
+        sensory = product.get("sensory", {})
+        result = compute_fit_score(profile, sensory)
+        scores.append({"product_id": pid, **result})
+    return {"profile_exists": True, "scores": scores}
+
+
 # --- Admin: List Products ---
 
 @app.get("/api/admin/products")
