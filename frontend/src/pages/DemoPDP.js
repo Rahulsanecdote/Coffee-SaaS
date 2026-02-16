@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Coffee, MapPin, Mountain, Thermometer, ChevronDown } from 'lucide-react';
 import TasteFitWidget from '../components/widget/TasteFitWidget';
+import TasteFitScore from '../components/widget/TasteFitScore';
 import BottomDrawer from '../components/widget/BottomDrawer';
 import { MOCK_PRODUCTS } from '../data/mockProducts';
 import { apiCall } from '../utils/api';
