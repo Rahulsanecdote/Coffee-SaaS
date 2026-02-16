@@ -157,6 +157,7 @@ export default function TasteFitWidget({ productId, variantId, productHandle, ta
       });
 
       setSubmitted(true);
+      if (onSubmitSuccess) onSubmitSuccess();
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
