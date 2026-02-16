@@ -40,6 +40,8 @@ Build MVP v0: a "Taste Fit" Affective Form widget that appears on Shopify PDP pa
 ### Backend (FastAPI)
 - Health check, auth (login), profile CRUD, response creation, event tracking
 - Admin endpoints: products list, product summary, segments, funnel, CSV export, privacy delete
+- **Taste-Fit Score API**: POST /api/affective/taste-fit (single product) + POST /api/affective/taste-fit/batch (multiple products)
+- Score algorithm: per-attribute match (1 - |pref - sensory| / 8), curved for meaningful distribution, labels from "Different Vibe" to "Perfect Match"
 - MongoDB indexes for performance
 - Seeded admin + viewer accounts
 
@@ -47,8 +49,11 @@ Build MVP v0: a "Taste Fit" Affective Form widget that appears on Shopify PDP pa
 - Demo PDP with 3 Unchained Coffee products (Papayo Natural, Geisha Honey, Red Bourbon)
 - TasteFit Widget with mode toggle, 6 attribute scales, consent toggles
 - "I'm drinking it now" mode: overall liking + standout tags + fit tags + notes
+- **Taste-Fit Score Card**: Animated circular ring with %, expandable per-attribute breakdown with delta arrows, positioned between sensory profile and price on PDP
+- Score shows "Discover your Taste Fit" CTA when no profile exists
+- Score auto-refreshes after widget submission
 - Admin: Login, Products, Product Detail (with Recharts distributions), Funnel, Segments, Privacy
-- Responsive design with bottom drawer for mobile
+- Responsive design with bottom drawer for mobile (includes score card)
 - Design tokens via CSS variables (widget dark/earthy theme, admin clean Swiss style)
 
 ## Test Results
