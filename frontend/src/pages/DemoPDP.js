@@ -217,11 +217,19 @@ export default function DemoPDP() {
             <Coffee size={18} /> Your Taste Fit
           </button>
           <BottomDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} title="Your Taste Fit">
+            <div className="mb-4">
+              <TasteFitScore
+                key={`mobile-${product.id}-${scoreKey}`}
+                productId={product.id}
+                productSensory={product.sensory}
+              />
+            </div>
             <TasteFitWidget
               productId={product.id}
               variantId={selectedVariant?.id}
               productHandle={product.handle}
               tastingNotes={product.tasting_notes}
+              onSubmitSuccess={() => setScoreKey(k => k + 1)}
             />
           </BottomDrawer>
         </>
