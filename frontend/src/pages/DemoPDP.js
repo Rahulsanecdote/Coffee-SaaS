@@ -135,6 +135,12 @@ export default function DemoPDP() {
               <p className="text-xs text-gray-400 text-right">{product.mouthfeel_descriptor}</p>
             </div>
 
+            <TasteFitScore
+              key={`${product.id}-${scoreKey}`}
+              productId={product.id}
+              productSensory={product.sensory}
+            />
+
             <div className="space-y-3">
               <p className="text-3xl font-heading font-bold text-[#2C1810]">${product.price.toFixed(2)}</p>
 
