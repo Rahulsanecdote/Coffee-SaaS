@@ -620,6 +620,12 @@ class TasteFitAPITester:
             self.test_admin_segments()
             self.test_admin_funnel()
 
+        # NEW: Taste-Fit Score tests
+        self.test_taste_fit_score_with_profile()
+        self.test_taste_fit_score_no_profile()
+        self.test_taste_fit_batch_with_profile()
+        self.test_taste_fit_batch_no_profile()
+
         # Results
         print("=" * 60)
         print(f"📊 Test Results: {self.tests_passed}/{self.tests_run} passed")
